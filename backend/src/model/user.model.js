@@ -68,15 +68,15 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 
-// Pre-save middleware to hash password if modified
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+
+userSchema.pre('save', async function () { // 'next' ko yahan se hata dein
+    if (!this.isModified('password')) return;
 
     try {
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
+        this.password = await bcrypt.hash(this.password, 10);
+        // next() ki zarurat nahi hai async function mein
     } catch (error) {
-    next(error);
+        throw error; // Direct error throw karein, Mongoose ise handle kar lega
     }
 });
 
